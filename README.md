@@ -1,6 +1,6 @@
 # 🚀 End-to-End-DevOps-Pipeline-on-AWS-with-Terraform-Jenkins-and-EKS
 
-![architecture](architecture.png)
+![architecture](Projeto1_End-to-End-DevOps-Pipeline-on-AWS-with-Terraform-Jenkins-and-EKS.png)
 
 ------------------------------------------------------------------------
 
