@@ -23,6 +23,11 @@ output "eks_cluster_endpoint" {
   value       = module.eks.cluster_endpoint
 }
 
+output "eks_node_security_group_id" {
+  description = "Security group ID used by EKS worker nodes"
+  value       = module.eks.node_security_group_id
+}
+
 output "jenkins_public_ip" {
   description = "Public IP of Jenkins EC2"
   value       = module.ec2_jenkins.public_ip
