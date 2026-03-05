@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/SEU_USUARIO/SEU_REPO_GITOPS.git
+    repoURL: https://github.com/felipesalesdeoliveira/devops-gitops-manifests.git
     targetRevision: main
     path: kubernetes
   destination:
