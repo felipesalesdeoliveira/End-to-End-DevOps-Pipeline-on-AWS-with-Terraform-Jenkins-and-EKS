@@ -1,0 +1,47 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_REGION = "us-east-1"
+    ECR_REPOSITORY = "sample-application"
+    IMAGE_TAG = "${env.BUILD_NUMBER}"
+    K8S_MANIFEST_FILE = "kubernetes/deployment.yaml"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build Image') {
+      steps {
+        sh 'docker build -f docker/Dockerfile -t ${ECR_REPOSITORY}:${IMAGE_TAG} .'
+      }
+    }
+
+    stage('Push to ECR') {
+      steps {
+        sh '''
+          AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          ECR_REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+          aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+          docker tag ${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+        '''
+      }
+    }
+
+    stage('Update Manifest') {
+      steps {
+        sh '''
+          AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          ECR_REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+          NEW_IMAGE=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+          sed -i.bak "s|image: .*|image: ${NEW_IMAGE}|" ${K8S_MANIFEST_FILE}
+        '''
+      }
+    }
+  }
+}

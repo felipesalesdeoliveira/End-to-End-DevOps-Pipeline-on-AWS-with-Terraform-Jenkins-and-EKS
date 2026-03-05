@@ -1,0 +1,15 @@
+aws_region            = "us-east-1"
+project_name          = "devops-e2e"
+environment           = "dev"
+cluster_name          = "devops-eks"
+key_name              = "my-keypair"
+ssh_ingress_cidr      = "X.X.X.X/32"
+jenkins_allowed_cidr  = "X.X.X.X/32"
+sonarqube_allowed_cidr = "X.X.X.X/32"
+
+# Optional tuning
+# node_instance_types = ["t3.large"]
+# node_desired_size   = 2
+# node_min_size       = 1
+# node_max_size       = 3
+# ecr_repository_name = "sample-application"
