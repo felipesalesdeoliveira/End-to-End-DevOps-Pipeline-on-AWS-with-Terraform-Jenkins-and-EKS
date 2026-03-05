@@ -5,6 +5,22 @@ data "aws_availability_zones" "available" {
 locals {
   name_prefix = "${var.project_name}-${var.environment}"
   azs         = slice(data.aws_availability_zones.available.names, 0, var.az_count)
+  aws_auth_roles = concat(
+    [
+      {
+        rolearn  = module.eks.node_role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups   = ["system:bootstrappers", "system:nodes"]
+      }
+    ],
+    var.aws_auth_admin_role_arn != null ? [
+      {
+        rolearn  = var.aws_auth_admin_role_arn
+        username = "admin"
+        groups   = ["system:masters"]
+      }
+    ] : []
+  )
 
   common_tags = {
     Project     = var.project_name
@@ -41,6 +57,31 @@ module "eks" {
   node_min_size                = var.node_min_size
   node_max_size                = var.node_max_size
   tags                         = local.common_tags
+}
+
+data "aws_eks_cluster" "this" {
+  name       = module.eks.cluster_name
+  depends_on = [module.eks]
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name       = module.eks.cluster_name
+  depends_on = [module.eks]
+}
+
+resource "kubernetes_config_map_v1_data" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapRoles = yamlencode(local.aws_auth_roles)
+  }
+
+  force = true
+
+  depends_on = [module.eks]
 }
 
 module "ec2_jenkins" {

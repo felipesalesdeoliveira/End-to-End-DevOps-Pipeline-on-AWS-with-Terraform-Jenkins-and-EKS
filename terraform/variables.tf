@@ -100,6 +100,12 @@ variable "node_max_size" {
   default     = 3
 }
 
+variable "aws_auth_admin_role_arn" {
+  description = "Optional IAM role ARN to grant cluster-admin via aws-auth"
+  type        = string
+  default     = null
+}
+
 variable "key_name" {
   description = "Optional EC2 key pair name"
   type        = string

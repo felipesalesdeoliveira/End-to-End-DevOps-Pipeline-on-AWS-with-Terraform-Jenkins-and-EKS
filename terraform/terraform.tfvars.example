@@ -6,6 +6,7 @@ key_name              = "my-keypair"
 ssh_ingress_cidr      = "X.X.X.X/32"
 jenkins_allowed_cidr  = "X.X.X.X/32"
 sonarqube_allowed_cidr = "X.X.X.X/32"
+# aws_auth_admin_role_arn = "arn:aws:iam::123456789012:role/AdminRole"
 
 # Optional tuning
 # node_instance_types = ["t3.large"]
